@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prednisone Taper Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        form {
+            width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: lightblue;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #90ee90;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Prednisone Taper Calculator</h2>
+    <form id="prednisone-taper-form" onsubmit="calculateTaper(event)">
+        <div class="input-container">
+            <label for="starting-dose-mg">Starting Dose (mg):</label>
+            <input type="number" id="starting-dose-mg" min="0" step="0.1" required>
+        </div>
+        <div class="input-container">
+            <label for="taper-schedule-days">Taper Schedule (days):</label>
+            <input type="number" id="taper-schedule-days" min="1" required>
+        </div>
+        <div class="input-container">
+            <label for="taper-percentage">Taper by Percentage (%):</label>
+            <input type="number" id="taper-percentage" min="1" max="100" step="0.1" required>
+        </div>
+        <div class="input-container">
+            <label for="tablet-strength-mg">Tablet Strength (mg):</label>
+            <select id="tablet-strength-mg">
+                <option value="1">1mg</option>
+                <option value="2">2mg</option>
+                <option value="5">5mg</option>
+                <option value="10">10mg</option>
+                <option value="20">20mg</option>
+                <option value="50">50mg</option>
+                <!-- Add more options as needed -->
+            </select>
+        </div>
+        <input type="submit" value="Calculate Taper">
+    </form>
+
+    <div id="result" class="result"></div>
+
+    <script>
+        function calculateTaper(event) {
+            event.preventDefault();
+            const startingDose = parseFloat(document.getElementById("starting-dose-mg").value);
+            const taperDays = parseInt(document.getElementById("taper-schedule-days").value);
+            const taperPercentage = parseFloat(document.getElementById("taper-percentage").value);
+            const tabletStrength = parseInt(document.getElementById("tablet-strength-mg").value);
+
+            // Calculate taper based on the percentage reduction
+            let currentDose = startingDose;
+            const taperResults = [];
+            for (let day = 1; day <= taperDays; day++) {
+                const nextDose = currentDose - (currentDose * (taperPercentage / 100));
+                taperResults.push(nextDose);
+                currentDose = nextDose;
+            }
+
+            // Convert taper doses to tablet count
+            const tabletsPerDay = taperResults.map(dose => Math.ceil(dose / tabletStrength));
+            const totalTablets = tabletsPerDay.reduce((total, tablets) => total + tablets, 0);
+
+            // Display results
+            const resultContainer = document.getElementById("result");
+            resultContainer.innerHTML = `
+                <p><strong>Total Tablets Needed: ${totalTablets}</strong></p>
+                <p><strong>Tablets Per Day:</strong> ${tabletsPerDay.join(", ")}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
